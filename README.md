@@ -37,6 +37,11 @@ Smart Inline Autocomplete is a sleek and minimal web-based autocomplete tool bui
 To add or remove words, edit the wordList array in the <script> section.
 To change styles, modify the :root variables or component styles in <style>.
 
+
+
+<img width="2559" height="1348" alt="Screenshot 2025-07-12 205007" src="https://github.com/user-attachments/assets/a6e28121-c746-45da-9bc3-72b12dc30406" />
+<img width="2554" height="1346" alt="Screenshot 2025-07-12 205038" src="https://github.com/user-attachments/assets/71ce05ce-5774-4f4a-9274-590b7740d71a" />
+
 📄 License
 This project is open-source under the MIT License.
 
