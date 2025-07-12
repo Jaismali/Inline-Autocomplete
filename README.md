@@ -1,5 +1,3 @@
-# Inline-Autocomplete
-
 # 🔍 Smart Inline Autocomplete
 
 Smart Inline Autocomplete is a sleek and minimal web-based autocomplete tool built with pure HTML, CSS, and JavaScript. It features real-time suggestions, inline autocompletion, and a smooth dark/light mode toggle — perfect for tech-related vocab input fields or smart forms.
