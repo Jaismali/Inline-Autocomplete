@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Inline Autocomplete</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-light: #f7f7f7;
+      --bg-dark: #1e1e1e;
+      --text-light: #333;
+      --text-dark: #f7f7f7;
+      --input-light: #fff;
+      --input-dark: #2c2c2c;
+      --suggestion-light: #fff;
+      --suggestion-dark: #2a2a2a;
+      --hover-light: #eee;
+      --hover-dark: #444;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.light {
+      background-color: var(--bg-light);
+      color: var(--text-light);
+    }
+
+    .autocomplete-container {
+      width: 400px;
+      text-align: center;
+      position: relative;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-family: inherit;
+      background-color: var(--input-dark);
+      color: var(--text-dark);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.light input {
+      background-color: var(--input-light);
+      color: var(--text-light);
+    }
+
+    ul#suggestionsList {
+      list-style: none;
+      padding: 0;
+      margin-top: 10px;
+      border-radius: 8px;
+      overflow: hidden;
+      display: none;
+      max-height: 200px;
+      overflow-y: auto;
+      background-color: var(--suggestion-dark);
+      color: var(--text-dark);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.light ul#suggestionsList {
+      background-color: var(--suggestion-light);
+      color: var(--text-light);
+    }
+
+    ul#suggestionsList li {
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+
+    ul#suggestionsList li:hover {
+      background-color: var(--hover-dark);
+    }
+
+    body.light ul#suggestionsList li:hover {
+      background-color: var(--hover-light);
+    }
+
+    .dark-toggle {
+      position: fixed;
+      top: 15px;
+      right: 20px;
+      font-size: 22px;
+      cursor: pointer;
+      user-select: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+<div class="dark-toggle" onclick="toggleMode()">☀️</div>
+
+<div class="autocomplete-container">
+  <h2>🔍 Inline Autocomplete</h2>
+  <div class="input-wrapper">
+    <input type="text" id="autocompleteInput" placeholder="Type something..." autocomplete="off">
+    <ul id="suggestionsList"></ul>
+  </div>
+</div>
+
+<script>
+  const wordList = [
+    "Artificial Intelligence", "Augmented Reality", "Api Integration", "Automation Script", "Autonomous Vehicle",
+    "Blockchain Technology", "Back End", "Bash Script", "Binary Search",
+    "Cloud Computing", "Computer Vision", "Classification Model", "Command Line", "Context Aware System",
+    "Data Mining", "Deep Learning", "Docker Container", "Digital Twin",
+    "Edge Computing", "Embedded Systems", "Elastic Search",
+    "Face Recognition", "Feature Extraction", "Fuzzy Logic", "Firmware Update",
+    "Graph Neural Network", "Gesture Control", "Google Cloud", "Gpu Acceleration", "Generative Ai",
+    "Human Interface", "Hardware Driver", "Hash Function", "Hybrid Model",
+    "Image Processing", "Internet Of Things", "Instance Segmentation", "Input Stream",
+    "Jupyter Notebook", "Json Structure", "Javascript Runtime",
+    "K Nearest Neighbors", "Kubernetes Cluster", "Key-Value Store",
+    "Language Model", "Linux System", "Logistic Regression", "Low Latency", "Linear Algebra",
+    "Machine Learning", "Model Evaluation", "Model Training", "Multi-Agent System", "Matplotlib Graph",
+    "Neural Network", "Natural Language Processing", "Node Js", "Naive Bayes",
+    "Object Detection", "Open Source", "Operating System",
+    "Python Programming", "Predictive Analytics", "Program Counter", "Prompt Engineering", "Post Request",
+    "Query Expansion", "Quantum Computing", "Quick Sort",
+    "React Framework", "Robot Navigation", "Relational Database", "Recurrent Network",
+    "Smart Home", "Speech Synthesis", "Server Setup", "Support Vector Machine", "Supervised Learning",
+    "Tensorflow Model", "Text Generation", "Training Dataset", "Transfer Learning", "Type Inference",
+    "User Experience", "Ubuntu Linux", "Unsupervised Learning",
+    "Voice Command", "Virtual Assistant", "Version Control", "Vector Embedding",
+    "Web Development", "Web Application", "Wireless Sensor", "Windows Os",
+    "Xgboost Algorithm", "Xml Parser", "Xss Attack",
+    "Yaml Config", "Youtube Api", "Yolo Algorithm",
+    "Zero Shot Learning", "Zebra Puzzle", "Zlib Compression"
+  ];
+
+  const input = document.getElementById('autocompleteInput');
+  const suggestionsList = document.getElementById('suggestionsList');
+  let userTyped = '';
+  let isBackspacing = false;
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === "Backspace") {
+      isBackspacing = true;
+      return;
+    }
+
+    if (e.key === "ArrowRight" || e.key === "Tab") {
+      const match = wordList.find(word => word.toLowerCase().startsWith(userTyped.toLowerCase()));
+      if (match && match.toLowerCase() !== userTyped.toLowerCase()) {
+        e.preventDefault();
+        input.value = match;
+        input.setSelectionRange(match.length, match.length);
+        suggestionsList.style.display = "none";
+      }
+    } else {
+      isBackspacing = false;
+    }
+  });
+
+  input.addEventListener('input', () => {
+    const rawValue = input.value;
+
+    if (isBackspacing) {
+      userTyped = rawValue;
+      suggestionsList.style.display = "none";
+      return;
+    }
+
+    userTyped = rawValue;
+    const value = rawValue.toLowerCase();
+    if (!value) {
+      suggestionsList.style.display = "none";
+      return;
+    }
+
+    const matches = wordList.filter(word => word.toLowerCase().startsWith(value)).slice(0, 10);
+    if (matches.length > 0) {
+      const suggestion = matches[0];
+      if (suggestion.toLowerCase() !== value) {
+        input.value = suggestion;
+        input.setSelectionRange(value.length, suggestion.length);
+      }
+      suggestionsList.innerHTML = matches.map(word => `<li>${word}</li>`).join("");
+      suggestionsList.style.display = "block";
+    } else {
+      suggestionsList.style.display = "none";
+    }
+  });
+
+  function toggleMode() {
+    const body = document.body;
+    const toggle = document.querySelector('.dark-toggle');
+    body.classList.toggle('light');
+    toggle.textContent = body.classList.contains('light') ? '🌙' : '☀️';
+  }
+</script>
+
+</body>
+</html>
